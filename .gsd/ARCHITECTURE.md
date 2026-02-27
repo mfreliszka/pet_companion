@@ -42,68 +42,83 @@ mobile/lib/
 ├── main.dart
 ├── firebase_options.dart
 ├── core/
-│   ├── theme/                  # App theme, colors, typography
-│   ├── constants/              # App-wide constants
-│   ├── routing/                # GoRouter configuration
-│   ├── utils/                  # Image compression, date helpers, PDF generation
-│   └── widgets/                # Shared widgets (photo picker, loading, etc.)
+│   ├── theme/
+│   │   ├── app_theme.dart          # ThemeData for light + dark (dark default)
+│   │   ├── app_colors.dart         # Color palette definitions
+│   │   ├── app_typography.dart     # Text styles
+│   │   └── app_spacing.dart        # Spacing constants
+│   ├── constants/                  # App-wide constants
+│   ├── routing/
+│   │   └── app_router.dart         # GoRouter with drawer navigation
+│   ├── utils/                      # Image compression, date helpers, PDF generation
+│   └── widgets/                    # Reusable UI component library
+│       ├── buttons/                # Custom buttons (primary, secondary, icon)
+│       ├── cards/                  # Card components (info card, list card)
+│       ├── inputs/                 # Text fields, dropdowns, date pickers
+│       ├── dialogs/                # Confirmation, alert, bottom sheet dialogs
+│       ├── loading/                # Shimmer, spinner, skeleton loaders
+│       ├── layout/                 # App drawer, scaffolds, section headers
+│       └── media/                  # Photo picker, image viewer, avatar
 ├── features/
-│   ├── auth/                   # Google Sign-In, auth state
+│   ├── auth/                       # Google Sign-In, auth state
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   ├── pets/                   # Pet CRUD, pet profiles
+│   ├── home/                       # Home / dashboard screen
+│   │   ├── screens/
+│   │   └── providers/
+│   ├── pets/                       # Pet CRUD, pet profiles
 │   │   ├── models/
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   ├── family/                 # Family management, invitations, roles
+│   ├── family/                     # Family management, invitations, roles
 │   │   ├── models/
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   ├── journal/                # Pet journal entries (mood, symptoms, notes, etc.)
+│   ├── journal/                    # Pet journal entries (mood, symptoms, notes, etc.)
 │   │   ├── models/
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   ├── health/                 # Weight tracking, medical records, vaccinations
+│   ├── health/                     # Weight tracking, medical records, vaccinations
 │   │   ├── models/
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   ├── schedule/               # Events, cyclic events, reminders, routines
+│   ├── schedule/                   # Events, cyclic events, reminders, routines
 │   │   ├── models/
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   ├── notifications/          # FCM handling, notification preferences
+│   ├── notifications/              # FCM handling, notification preferences
 │   │   ├── providers/
 │   │   └── services/
-│   ├── expenses/               # Expense tracking
+│   ├── expenses/                   # Expense tracking
 │   │   ├── models/
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   ├── contacts/               # Pet service contacts
+│   ├── contacts/                   # Pet service contacts
 │   │   ├── models/
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   ├── reports/                # PDF report generation
+│   ├── reports/                    # PDF report generation
 │   │   ├── screens/
 │   │   ├── providers/
 │   │   └── services/
-│   └── premium/               # Premium subscription management
+│   └── premium/                    # Premium subscription management
 │       ├── screens/
 │       ├── providers/
 │       └── services/
 └── services/
-    ├── firebase_service.dart   # Firestore helpers
-    ├── auth_service.dart       # Firebase Auth wrapper
-    ├── storage_service.dart    # Cloudflare R2 client
-    ├── notification_service.dart # FCM setup
-    └── cache_service.dart      # Hive local cache
+    ├── firebase_service.dart       # Firestore helpers
+    ├── auth_service.dart           # Firebase Auth wrapper
+    ├── storage_service.dart        # Cloudflare R2 client
+    ├── notification_service.dart   # FCM setup
+    └── cache_service.dart          # Hive local cache
 ```
 
 ## Firebase Cloud Functions Structure
@@ -372,6 +387,7 @@ firebase/functions/
 | `createdAt` | `timestamp` | Creation time |
 | `updatedAt` | `timestamp` | Last update |
 | `isActive` | `boolean` | Whether the event is active |
+| `reminderMinutesBefore` | `int` | Minutes before event to send notification (default: `5`) |
 
 **`schedule` map (for cyclic events):**
 
@@ -408,7 +424,7 @@ firebase/functions/
 | `familyId` | `string` | Which family |
 | `category` | `string` | `food`, `vet`, `medication`, `toys`, `grooming`, `insurance`, `accessories`, `other` |
 | `amount` | `number` | Cost amount |
-| `currency` | `string` | Currency code (e.g., `PLN`, `USD`) |
+| `currency` | `string` | Currency code (default: `PLN`) |
 | `description` | `string?` | What the expense was for |
 | `date` | `timestamp` | Date of expense |
 | `receiptUrl` | `string?` | Photo of receipt (Cloudflare R2) |

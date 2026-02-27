@@ -18,16 +18,19 @@
 
 ### Phase 1: Project Foundation & Authentication
 **Status**: ⬜ Not Started
-**Objective**: Flutter project scaffold, Firebase setup, Google Sign-In, user profile
+**Objective**: Flutter project scaffold, Firebase setup, Google Sign-In, user profile, design system
 **Requirements**: REQ-01, REQ-02
-- Flutter project creation with folder structure
-- Firebase project configuration (Auth, Firestore, FCM)
-- Cloudflare R2 bucket setup
+- Flutter project creation with folder structure (`mobile/`)
+- Firebase project creation from scratch (Auth, Firestore)
+- Cloudflare R2 bucket provisioning
 - Firestore security rules (initial)
+- Full custom design system (colors, typography, spacing, reusable component library)
+- Light + Dark theme (dark mode default)
+- Drawer navigation with GoRouter
 - Google Sign-In flow
-- User profile screen
-- Basic app navigation (GoRouter)
-- Theme and design system
+- User document creation in Firestore on first sign-in
+- Basic user profile screen (name, email, photo, sign out)
+- Ensure Flutter web builds work for rapid UI testing
 
 ### Phase 2: Pet Profiles & Family System
 **Status**: ⬜ Not Started

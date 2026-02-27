@@ -9,3 +9,25 @@
 | ADR-04 | Event completions as subcollection | Tracking cyclic event completions in a subcollection under events rather than modifying the event document. Prevents write conflicts and enables history. | 2026-02-27 |
 | ADR-05 | Python Cloud Functions Gen 2 | Using Python runtime for Cloud Functions for consistency with data processing and PDF generation libraries. | 2026-02-27 |
 | ADR-06 | Client-side photo compression | Compressing photos on the Flutter side before upload to reduce bandwidth, storage costs, and upload time. Max 1024px, ~80% JPEG quality. | 2026-02-27 |
+| ADR-07 | Default currency PLN | All expenses default to PLN currency. Users can change per-expense if needed. | 2026-02-27 |
+| ADR-08 | Notification lead time 5 minutes | Push notifications for events fire 5 minutes before the scheduled time by default. Stored as `reminderMinutesBefore` on the event document. | 2026-02-27 |
+
+## Phase 1 Decisions
+
+**Date:** 2026-02-27
+
+### Scope
+- Firebase project created from scratch (no existing project)
+- Cloudflare R2 bucket created from scratch (no existing bucket)
+- Basic user profile screen (name, email, sign out) — no families/pets display yet
+- Onboarding flow deferred to a later phase (post-auth lands on empty home)
+- FCM token registration deferred to Phase 4
+- R2 bucket provisioning included in Phase 1, but signed URL Cloud Functions in Phase 2
+
+### Approach
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| ADR-09: Design system | Full custom design system first | Separate folders/files for reusable UI components. Invest upfront for consistency. |
+| ADR-10: Theme mode | Light + Dark mode, dark is default | User preference. Both themes built from Phase 1. |
+| ADR-11: Navigation | Drawer navigation | More features accessible from a single menu. Chosen over bottom nav bar. |
+| ADR-12: Web support | Ensure Flutter web builds work | Enables rapid UI testing with Antigravity Browser Agent alongside Android/iOS. |
