@@ -9,6 +9,10 @@ import '../../features/auth/screens/profile_screen.dart';
 import '../../features/pets/screens/pets_list_screen.dart';
 import '../../features/pets/screens/add_pet_screen.dart';
 import '../../features/pets/screens/pet_detail_screen.dart';
+import '../../features/family/screens/family_list_screen.dart';
+import '../../features/family/screens/create_family_screen.dart';
+import '../../features/family/screens/join_family_screen.dart';
+import '../../features/family/screens/family_detail_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -154,8 +158,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/family',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'Family'),
+            builder: (context, state) => const FamilyListScreen(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                builder: (context, state) => const CreateFamilyScreen(),
+              ),
+              GoRoute(
+                path: 'join',
+                builder: (context, state) => const JoinFamilyScreen(),
+              ),
+              GoRoute(
+                path: ':familyId',
+                builder: (context, state) {
+                  final familyId = state.pathParameters['familyId']!;
+                  return FamilyDetailScreen(familyId: familyId);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/journal',

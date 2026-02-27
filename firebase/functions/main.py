@@ -133,3 +133,49 @@ def generate_r2_download_url(req: https_fn.CallableRequest) -> dict:
 
     return {"url": url}
 
+
+# ── Family Functions ─────────────────────────────────────────────
+
+@https_fn.on_call(
+    cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"]),
+)
+def create_family(req: https_fn.CallableRequest) -> dict:
+    """Create a family with optional password protection."""
+    if req.auth is None:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.UNAUTHENTICATED,
+            message="Authentication required.",
+        )
+
+    from src.family.invitation_handler import handle_create_family
+
+    try:
+        return handle_create_family(req.data or {}, req.auth.uid)
+    except ValueError as e:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            message=str(e),
+        )
+
+
+@https_fn.on_call(
+    cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"]),
+)
+def join_family_by_code(req: https_fn.CallableRequest) -> dict:
+    """Join a family using code + password verification."""
+    if req.auth is None:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.UNAUTHENTICATED,
+            message="Authentication required.",
+        )
+
+    from src.family.invitation_handler import handle_join_family_by_code
+
+    try:
+        return handle_join_family_by_code(req.data or {}, req.auth.uid)
+    except ValueError as e:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            message=str(e),
+        )
+
