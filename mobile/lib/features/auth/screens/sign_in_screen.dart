@@ -26,6 +26,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       await ref.read(authServiceProvider).signInWithGoogle();
       // GoRouter redirect will automatically navigate to home.
     } on GoogleSignInException catch (e) {
+      debugPrint(
+        'GoogleSignInException: code=${e.code}, desc=${e.description}',
+      );
       if (!mounted) return;
       // Cancelled sign-in is not an error.
       if (e.code == GoogleSignInExceptionCode.canceled) {
@@ -35,7 +38,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Sign-in failed: ${e.description ?? e.code}')),
       );
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('Sign-in error: $e\n$stack');
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
