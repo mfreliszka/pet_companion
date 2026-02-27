@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "103084225579",
+    "project_id": "pet-companion-app",
+    "storage_bucket": "pet-companion-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103084225579:android:3810f51934dd6ea4efa66e",
+        "android_client_info": {
+          "package_name": "com.petcompanion.pet_companion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "103084225579-qp8ql3j2r0b1lc8o50a78v9c9ggbpd5g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARCxJGwC-4qhUNPR8CZ7hchxfxTrUgk4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "103084225579-qp8ql3j2r0b1lc8o50a78v9c9ggbpd5g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "103084225579-e90auhlfcpq52nipudu2mia7kg30ttas.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.petcompanion.petCompanion"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
