@@ -6,6 +6,9 @@ import '../../features/auth/providers/auth_providers.dart';
 import '../../features/auth/screens/sign_in_screen.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/auth/screens/profile_screen.dart';
+import '../../features/pets/screens/pets_list_screen.dart';
+import '../../features/pets/screens/add_pet_screen.dart';
+import '../../features/pets/screens/pet_detail_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -134,8 +137,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/pets',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'My Pets'),
+            builder: (context, state) => const PetsListScreen(),
+            routes: [
+              GoRoute(
+                path: 'add',
+                builder: (context, state) => const AddPetScreen(),
+              ),
+              GoRoute(
+                path: ':petId',
+                builder: (context, state) {
+                  final petId = state.pathParameters['petId']!;
+                  return PetDetailScreen(petId: petId);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/family',
