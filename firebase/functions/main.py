@@ -63,3 +63,73 @@ def get_user_profile(req: https_fn.CallableRequest) -> dict:
         )
 
     return user_doc.to_dict()
+
+
+# ── R2 Storage Functions ─────────────────────────────────────────
+
+@https_fn.on_call(
+    cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"]),
+)
+def generate_r2_upload_url(req: https_fn.CallableRequest) -> dict:
+    """
+    Generate a presigned upload URL for Cloudflare R2.
+
+    Expects: { path: str, contentType: str }
+    Returns: { url: str, key: str }
+    """
+    if req.auth is None:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.UNAUTHENTICATED,
+            message="Authentication required.",
+        )
+
+    data = req.data or {}
+    path = data.get("path")
+    content_type = data.get("contentType", "image/jpeg")
+
+    if not path:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            message="'path' is required (e.g. 'pets/{petId}/profile/{uuid}.jpg').",
+        )
+
+    from src.storage.r2_client import R2Client
+
+    r2 = R2Client()
+    url = r2.generate_upload_url(key=path, content_type=content_type)
+
+    return {"url": url, "key": path}
+
+
+@https_fn.on_call(
+    cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"]),
+)
+def generate_r2_download_url(req: https_fn.CallableRequest) -> dict:
+    """
+    Generate a presigned download URL for Cloudflare R2.
+
+    Expects: { key: str }
+    Returns: { url: str }
+    """
+    if req.auth is None:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.UNAUTHENTICATED,
+            message="Authentication required.",
+        )
+
+    data = req.data or {}
+    key = data.get("key")
+
+    if not key:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            message="'key' is required.",
+        )
+
+    from src.storage.r2_client import R2Client
+
+    r2 = R2Client()
+    url = r2.generate_download_url(key=key)
+
+    return {"url": url}
+

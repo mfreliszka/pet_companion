@@ -27,6 +27,7 @@ dependencies:
   firebase_core: any
   firebase_auth: any
   cloud_firestore: any
+  cloud_functions: any
   google_sign_in: any
 
   # Local Storage

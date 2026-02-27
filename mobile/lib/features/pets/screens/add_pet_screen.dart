@@ -1,8 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/image_utils.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../auth/providers/auth_providers.dart';
@@ -28,6 +33,8 @@ class _AddPetScreenState extends ConsumerState<AddPetScreen> {
   PetSpecies _species = PetSpecies.dog;
   PetGender _gender = PetGender.unknown;
   DateTime? _dateOfBirth;
+  Uint8List? _photoBytes;
+  Uint8List? _thumbnailBytes;
   bool _isSaving = false;
 
   @override
@@ -59,6 +66,31 @@ class _AddPetScreenState extends ConsumerState<AddPetScreen> {
     setState(() => _isSaving = true);
 
     try {
+      String? photoUrl;
+      String? thumbUrl;
+
+      // Upload photo to R2 if one was picked
+      if (_photoBytes != null) {
+        final petUuid = const Uuid().v4();
+        final storageService = ref.read(storageServiceProvider);
+
+        // Upload full photo
+        final photoKey = await storageService.uploadFile(
+          path: 'pets/$petUuid/profile/$petUuid.jpg',
+          bytes: _photoBytes!,
+        );
+        photoUrl = photoKey;
+
+        // Upload thumbnail
+        if (_thumbnailBytes != null) {
+          final thumbKey = await storageService.uploadFile(
+            path: 'pets/$petUuid/profile/${petUuid}_thumb.jpg',
+            bytes: _thumbnailBytes!,
+          );
+          thumbUrl = thumbKey;
+        }
+      }
+
       // Use the first family for now — a family picker can be added later.
       final pet = Pet(
         name: _nameController.text.trim(),
@@ -68,6 +100,8 @@ class _AddPetScreenState extends ConsumerState<AddPetScreen> {
             : _breedController.text.trim(),
         gender: _gender,
         dateOfBirth: _dateOfBirth,
+        photoUrl: photoUrl,
+        photoThumbnailUrl: thumbUrl,
         microchipId: _microchipIdController.text.trim().isEmpty
             ? null
             : _microchipIdController.text.trim(),
@@ -93,6 +127,40 @@ class _AddPetScreenState extends ConsumerState<AddPetScreen> {
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  Future<void> _pickPhoto() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Camera'),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Gallery'),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
+
+    final bytes = await ImageUtils.pickAndProcessImage(source: source);
+    if (bytes == null) return;
+
+    final thumb = await ImageUtils.createThumbnail(bytes);
+
+    setState(() {
+      _photoBytes = bytes;
+      _thumbnailBytes = thumb;
+    });
   }
 
   Future<void> _pickDateOfBirth() async {
@@ -125,25 +193,24 @@ class _AddPetScreenState extends ConsumerState<AddPetScreen> {
         child: ListView(
           padding: AppSpacing.screenPadding,
           children: [
-            // ── Photo placeholder ──
+            // ── Photo picker ──
             Center(
               child: GestureDetector(
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Photo upload coming in Phase 2.2'),
-                    ),
-                  );
-                },
-                child: CircleAvatar(
-                  radius: AppSpacing.avatarXl / 2,
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  child: Icon(
-                    Icons.camera_alt_rounded,
-                    size: AppSpacing.iconXl,
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
-                ),
+                onTap: _pickPhoto,
+                child: _photoBytes != null
+                    ? CircleAvatar(
+                        radius: AppSpacing.avatarXl / 2,
+                        backgroundImage: MemoryImage(_photoBytes!),
+                      )
+                    : CircleAvatar(
+                        radius: AppSpacing.avatarXl / 2,
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        child: Icon(
+                          Icons.camera_alt_rounded,
+                          size: AppSpacing.iconXl,
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
+                      ),
               ),
             ),
             AppSpacing.verticalGapXl,

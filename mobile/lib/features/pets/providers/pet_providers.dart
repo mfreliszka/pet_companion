@@ -1,14 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../services/storage_service.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../models/pet_model.dart';
 import '../services/pet_service.dart';
 
-// ── Service Provider ────────────────────────────────────────────
+// ── Service Providers ───────────────────────────────────────────
 
 /// Singleton [PetService] instance.
 final petServiceProvider = Provider<PetService>((ref) {
   return PetService();
+});
+
+/// Singleton [StorageService] instance.
+final storageServiceProvider = Provider<StorageService>((ref) {
+  return StorageService();
 });
 
 // ── Pet Stream Providers ────────────────────────────────────────
