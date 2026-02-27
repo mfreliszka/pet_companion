@@ -1,5 +1,39 @@
 # JOURNAL.md — Session Log
 
+## Session: 2026-02-27 20:15–20:39
+
+### Objective
+Resume from pause, complete Plan 1.3 (Auth + Navigation + Screens), verify on Android.
+
+### Accomplished
+- **Firebase Config**: Committed `flutterfire configure` output (google-services.json, firebase_options.dart, etc.)
+- **Plan 1.3 Task 1**: Auth service (google_sign_in v7 API), Riverpod providers, Firestore user doc creation
+- **Plan 1.3 Task 2**: GoRouter with auth redirect, ShellRoute + AppDrawer, placeholder screens for all features
+- **Plan 1.3 Task 3**: Sign-in, home, and profile screens using design system components
+- **SHA-1 Fix**: Added Android debug SHA-1 fingerprint to Firebase project (was causing Credential Manager failure)
+- **Verified**: Google Sign-In works on Android device, user approved
+
+### Deviations
+- google_sign_in v7: Rewrote auth for singleton `GoogleSignIn.instance` / `.authenticate()` API (no more constructor + `.signIn()`)
+- riverpod 3.1: `valueOrNull` removed, replaced with `.value`
+- SHA-1 fingerprint: Had to add debug cert to Firebase for Android Credential Manager to work
+
+### Verification
+- [x] `flutter analyze lib/` — 0 errors
+- [x] `flutter run -d 192.168.1.148:5555` — Sign-in screen renders, Google Sign-In works
+- [ ] Firestore user doc read — PERMISSION_DENIED (rules not deployed yet)
+
+### Known Issues
+- Firestore security rules not deployed → user doc read fails with PERMISSION_DENIED
+- Fix: `cd firebase && firebase deploy --only firestore:rules --project=pet-companion-app`
+
+### Handoff Notes
+- Phase 1 complete, 10 commits total
+- Next: `/plan 2` for Phase 2 (Pet Profiles & Family System)
+- Firestore rules deployment needed before Phase 2
+
+---
+
 ## Session: 2026-02-27 16:00–17:50
 
 ### Objective
@@ -27,13 +61,10 @@ Initialize GSD project, plan Phase 1, and begin Phase 1 execution.
 ### Verification
 - [x] `flutter pub get` — 153 dependencies resolved
 - [x] `flutter analyze lib/core/` — 0 errors (2 info-level suggestions)
-- [ ] `flutter run -d chrome` — not yet tested (awaiting Firebase config)
 
 ### Paused Because
-Firebase project creation is a human-action checkpoint. User needs to create the Firebase project, enable Auth+Firestore, and run `flutterfire configure` before Plan 1.3 can begin.
+Firebase project creation is a human-action checkpoint.
 
 ### Handoff Notes
 - Git is clean (no uncommitted changes, 4 commits ahead of origin)
 - Plan 1.3 is next: auth service → GoRouter nav → screens
-- All code in `mobile/lib/core/` is ready and analyzed
-- `firebase/` directory has rules, indexes, Cloud Functions ready to deploy once project exists
