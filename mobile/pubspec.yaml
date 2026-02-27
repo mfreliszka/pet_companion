@@ -1,0 +1,60 @@
+name: pet_companion
+description: "Pet Companion - Your pet's health, organized"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI
+  cupertino_icons: any
+  google_fonts: any
+  cached_network_image: any
+  fl_chart: any
+
+  # State Management
+  flutter_riverpod: any
+  riverpod_annotation: any
+
+  # Navigation
+  go_router: any
+
+  # Firebase
+  firebase_core: any
+  firebase_auth: any
+  cloud_firestore: any
+  google_sign_in: any
+
+  # Local Storage
+  hive_flutter: any
+
+  # Media
+  image_picker: any
+  image_cropper: any
+  flutter_image_compress: any
+
+  # PDF & Reports
+  pdf: any
+  share_plus: any
+
+  # Utilities
+  path_provider: any
+  http: any
+  intl: any
+  uuid: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+  riverpod_generator: any
+  build_runner: any
+  json_serializable: any
+  json_annotation: any
+
+flutter:
+  uses-material-design: true
