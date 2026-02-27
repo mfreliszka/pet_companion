@@ -1,0 +1,161 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper Functions ──────────────────────────────────
+
+    // Check if the requesting user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if the requesting user is the document owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Check if the requesting user is a member of the given family
+    function isFamilyMember(familyId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/families/$(familyId)) &&
+        request.auth.uid in get(/databases/$(database)/documents/families/$(familyId)).data.memberIds;
+    }
+
+    // Check if the requesting user is an admin of the given family
+    function isFamilyAdmin(familyId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/families/$(familyId)) &&
+        request.auth.uid in get(/databases/$(database)/documents/families/$(familyId)).data.adminIds;
+    }
+
+    // ── Users Collection ──────────────────────────────────
+
+    match /users/{userId} {
+      // Users can only read and write their own profile
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if false; // Users cannot self-delete (handled by Cloud Function)
+
+      // Notification preferences subcollection
+      match /notificationPreferences/{familyId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // ── Families Collection ───────────────────────────────
+
+    match /families/{familyId} {
+      // Any authenticated user can create a family
+      allow create: if isAuthenticated();
+      // Only members can read family data
+      allow read: if isFamilyMember(familyId);
+      // Only admins can update family settings
+      allow update: if isFamilyAdmin(familyId);
+      // Only admins can delete family
+      allow delete: if isFamilyAdmin(familyId);
+
+      // Invitations subcollection
+      match /invitations/{invitationId} {
+        allow read: if isFamilyMember(familyId);
+        allow create: if isFamilyAdmin(familyId);
+        allow update: if isFamilyAdmin(familyId) ||
+          (isAuthenticated() && resource.data.invitedEmail == request.auth.token.email);
+        allow delete: if isFamilyAdmin(familyId);
+      }
+
+      // Notification settings subcollection (admin-controlled)
+      match /notificationSettings/{memberId} {
+        allow read: if isFamilyMember(familyId);
+        allow write: if isFamilyAdmin(familyId);
+      }
+    }
+
+    // ── Pets Collection ───────────────────────────────────
+
+    match /pets/{petId} {
+      allow read: if isFamilyMember(resource.data.familyId);
+      allow create: if isAuthenticated(); // familyId validated server-side
+      allow update: if isFamilyMember(resource.data.familyId);
+      allow delete: if isFamilyAdmin(resource.data.familyId);
+
+      // All pet subcollections: family member access
+      match /journalEntries/{entryId} {
+        allow read: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+        allow write: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+      }
+
+      match /weightHistory/{entryId} {
+        allow read: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+        allow write: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+      }
+
+      match /medications/{medicationId} {
+        allow read: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+        allow write: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+
+        match /logs/{logId} {
+          allow read: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+          allow write: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+        }
+      }
+
+      match /vaccinations/{vaccinationId} {
+        allow read: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+        allow write: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+      }
+
+      match /medicalRecords/{recordId} {
+        allow read: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+        allow write: if isFamilyMember(get(/databases/$(database)/documents/pets/$(petId)).data.familyId);
+      }
+    }
+
+    // ── Events Collection ─────────────────────────────────
+
+    match /events/{eventId} {
+      allow read: if isFamilyMember(resource.data.familyId);
+      allow create: if isAuthenticated();
+      allow update: if isFamilyMember(resource.data.familyId);
+      allow delete: if isFamilyAdmin(resource.data.familyId);
+
+      match /completions/{completionId} {
+        allow read: if isFamilyMember(get(/databases/$(database)/documents/events/$(eventId)).data.familyId);
+        allow write: if isFamilyMember(get(/databases/$(database)/documents/events/$(eventId)).data.familyId);
+      }
+    }
+
+    // ── Expenses Collection ───────────────────────────────
+
+    match /expenses/{expenseId} {
+      allow read: if isFamilyMember(resource.data.familyId);
+      allow create: if isAuthenticated();
+      allow update: if isFamilyMember(resource.data.familyId);
+      allow delete: if isFamilyMember(resource.data.familyId);
+    }
+
+    // ── Contacts Collection ───────────────────────────────
+
+    match /contacts/{contactId} {
+      allow read: if isFamilyMember(resource.data.familyId);
+      allow create: if isAuthenticated();
+      allow update: if isFamilyMember(resource.data.familyId);
+      allow delete: if isFamilyMember(resource.data.familyId);
+    }
+
+    // ── Routine Templates Collection ──────────────────────
+
+    match /routineTemplates/{templateId} {
+      allow read: if isFamilyMember(resource.data.familyId);
+      allow create: if isAuthenticated();
+      allow update: if isFamilyMember(resource.data.familyId);
+      allow delete: if isFamilyAdmin(resource.data.familyId);
+
+      match /dailyLogs/{dateString} {
+        allow read: if isFamilyMember(get(/databases/$(database)/documents/routineTemplates/$(templateId)).data.familyId);
+        allow write: if isFamilyMember(get(/databases/$(database)/documents/routineTemplates/$(templateId)).data.familyId);
+      }
+    }
+  }
+}
