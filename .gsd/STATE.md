@@ -1,21 +1,20 @@
 # STATE.md — Project Memory
 
-> **Last Updated**: 2026-02-28 22:08
+> **Last Updated**: 2026-02-28 23:15
 > **Current Phase**: 4 — Schedules, Notifications & Routines
-> **Status**: 📋 Planned (ready for execution)
+> **Status**: ✅ Complete
 
 ## Current Position
-- **Phase**: 4 (planned)
-- **Task**: Planning complete — 4 plans across 3 waves
-- **Status**: Ready for execution
+- **Phase**: 4 (complete)
+- **Task**: All 4 plans executed across 3 waves
+- **Status**: Build verified, committed
 
 ## Last Session Summary
-Phase 3 complete (3 plans, 3 commits). Firebase API key removed from git history via BFG.
-Phase 4 planned with 4 plans:
-- 4.1: Event model, service, event list/create/detail screens (Wave 1)
-- 4.2: Routine template model, service, routine screens (Wave 1)
-- 4.3: FCM client setup + Cloud Functions notification crons (Wave 2)
-- 4.4: Calendar view, notification preferences, event completion auto-dismiss (Wave 3)
+Phase 4 complete (4 plans, 4 commits). Full schedule system implemented:
+- Events: model, service, add/list/detail screens, router
+- Routines: template model, daily log system, reorderable task builder, detail screen
+- FCM: NotificationService with token management, Cloud Function crons (event + vaccination reminders)
+- Calendar: custom month grid, per-day event + routine progress view, notification preferences
 
 ### Known Issue (from Phase 1)
 Firestore security rules not yet deployed → `PERMISSION_DENIED` when reading user doc. Run:
@@ -35,10 +34,10 @@ cd firebase && firebase deploy --only firestore:rules --project=pet-companion-ap
 | 3.1 | 1 | Journal Entry Model, Service & Timeline | ✅ Complete |
 | 3.2 | 1 | Weight Tracking & Medication Management | ✅ Complete |
 | 3.3 | 2 | Vaccinations, Medical Records & Health Hub | ✅ Complete |
-| 4.1 | 1 | Event Model, Service & Scheduling Screens | 📋 Planned |
-| 4.2 | 1 | Daily Routine Templates & Task Assignments | 📋 Planned |
-| 4.3 | 2 | FCM Setup & Cloud Function Notification Crons | 📋 Planned |
-| 4.4 | 3 | Calendar View, Notification Prefs & Auto-Dismiss | 📋 Planned |
+| 4.1 | 1 | Event Model, Service & Scheduling Screens | ✅ Complete |
+| 4.2 | 1 | Daily Routine Templates & Task Assignments | ✅ Complete |
+| 4.3 | 2 | FCM Setup & Cloud Function Notification Crons | ✅ Complete |
+| 4.4 | 3 | Calendar View, Notification Prefs & Auto-Dismiss | ✅ Complete |
 
 ## Next Steps
-1. `/execute 4` — Execute all Phase 4 plans
+1. Phase 5 planning — TBD (Expenses, Contacts, Premium features, etc.)
