@@ -37,6 +37,7 @@ import '../../features/expenses/screens/expense_detail_screen.dart';
 import '../../features/contacts/screens/contacts_screen.dart';
 import '../../features/contacts/screens/add_contact_screen.dart';
 import '../../features/reports/screens/generate_report_screen.dart';
+import '../../features/premium/screens/premium_paywall_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -426,6 +427,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               final familyId = state.uri.queryParameters['familyId'] ?? '';
               return GenerateReportScreen(familyId: familyId);
             },
+          ),
+          GoRoute(
+            path: '/premium',
+            builder: (context, state) => const PremiumPaywallScreen(),
           ),
         ],
       ),
