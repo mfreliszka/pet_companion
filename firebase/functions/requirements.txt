@@ -3,3 +3,4 @@ firebase-functions>=0.1.0
 google-cloud-firestore>=2.0.0
 boto3>=1.28.0
 bcrypt>=4.0.0
+reportlab>=4.0.0

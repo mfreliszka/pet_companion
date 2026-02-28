@@ -14,8 +14,63 @@ from src.notifications.send_reminders import (  # noqa: F401
     send_vaccination_reminders,
 )
 
+# Import report generator
+from src.reports.report_generator import generate_report_pdf  # noqa: F401
+
 # Initialize Firebase Admin SDK
 app = initialize_app()
+
+
+# ── PDF Report Generation ──────────────────────────────────────
+
+@https_fn.on_call(
+    memory=options.MemoryOption.MB_512,
+    timeout_sec=120,
+)
+def generate_report(req: https_fn.CallableRequest):
+    """Generate a PDF health report for a pet.
+
+    Args (via req.data):
+        petId: str — Pet document ID
+        startDate: str — ISO 8601 date string
+        endDate: str — ISO 8601 date string
+
+    Returns:
+        { reportKey: str, downloadUrl: str }
+    """
+    if req.auth is None:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.UNAUTHENTICATED,
+            message="Authentication required",
+        )
+
+    pet_id = req.data.get("petId")
+    start_str = req.data.get("startDate")
+    end_str = req.data.get("endDate")
+
+    if not all([pet_id, start_str, end_str]):
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            message="petId, startDate, and endDate are required",
+        )
+
+    try:
+        start_date = datetime.fromisoformat(start_str)
+        end_date = datetime.fromisoformat(end_str)
+    except ValueError:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            message="Invalid date format. Use ISO 8601",
+        )
+
+    r2_key, download_url = generate_report_pdf(
+        pet_id=pet_id,
+        start_date=start_date,
+        end_date=end_date,
+        user_id=req.auth.uid,
+    )
+
+    return {"reportKey": r2_key, "downloadUrl": download_url}
 
 
 @identity_fn.before_user_created()

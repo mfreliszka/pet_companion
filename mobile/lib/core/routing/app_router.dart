@@ -36,6 +36,7 @@ import '../../features/expenses/screens/add_expense_screen.dart';
 import '../../features/expenses/screens/expense_detail_screen.dart';
 import '../../features/contacts/screens/contacts_screen.dart';
 import '../../features/contacts/screens/add_contact_screen.dart';
+import '../../features/reports/screens/generate_report_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -421,8 +422,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/reports',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'Reports'),
+            builder: (context, state) {
+              final familyId = state.uri.queryParameters['familyId'] ?? '';
+              return GenerateReportScreen(familyId: familyId);
+            },
           ),
         ],
       ),
