@@ -69,6 +69,7 @@ def get_user_profile(req: https_fn.CallableRequest) -> dict:
 
 @https_fn.on_call(
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"]),
+    secrets=["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME"],
 )
 def generate_r2_upload_url(req: https_fn.CallableRequest) -> dict:
     """
@@ -103,6 +104,7 @@ def generate_r2_upload_url(req: https_fn.CallableRequest) -> dict:
 
 @https_fn.on_call(
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"]),
+    secrets=["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME"],
 )
 def generate_r2_download_url(req: https_fn.CallableRequest) -> dict:
     """
