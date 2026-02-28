@@ -23,6 +23,9 @@ import '../../features/health/screens/vaccinations_screen.dart';
 import '../../features/health/screens/add_vaccination_screen.dart';
 import '../../features/health/screens/medical_records_screen.dart';
 import '../../features/health/screens/add_medical_record_screen.dart';
+import '../../features/schedule/screens/events_screen.dart';
+import '../../features/schedule/screens/add_event_screen.dart';
+import '../../features/schedule/screens/event_detail_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -105,6 +108,7 @@ class _AuthenticatedShell extends ConsumerWidget {
     if (location.contains('/health/vaccinations')) return 'Vaccinations';
     if (location.contains('/health/records')) return 'Medical Records';
     if (location.contains('/health')) return 'Health';
+    if (location.contains('/events')) return 'Events';
     return switch (location) {
       '/' => 'Home',
       '/profile' => 'Profile',
@@ -248,6 +252,38 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       ),
                     ],
                   ),
+                  GoRoute(
+                    path: 'events',
+                    builder: (context, state) {
+                      final petId = state.pathParameters['petId']!;
+                      return EventsScreen(petId: petId);
+                    },
+                    routes: [
+                      GoRoute(
+                        path: 'add',
+                        builder: (context, state) {
+                          final petId = state.pathParameters['petId']!;
+                          final familyId =
+                              state.uri.queryParameters['familyId'] ?? '';
+                          return AddEventScreen(
+                            petId: petId,
+                            familyId: familyId,
+                          );
+                        },
+                      ),
+                      GoRoute(
+                        path: ':eventId',
+                        builder: (context, state) {
+                          final petId = state.pathParameters['petId']!;
+                          final eventId = state.pathParameters['eventId']!;
+                          return EventDetailScreen(
+                            petId: petId,
+                            eventId: eventId,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],
@@ -287,8 +323,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/schedule',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'Schedule'),
+            builder: (context, state) => const PlaceholderScreen(
+              title: 'Schedule\nSelect a pet to view their events',
+            ),
           ),
           GoRoute(
             path: '/expenses',
