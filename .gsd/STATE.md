@@ -1,48 +1,41 @@
 # STATE.md — Project Memory
 
-> **Last Updated**: 2026-02-28 22:32
+> **Last Updated**: 2026-02-28 23:45
 > **Current Phase**: 5 — Expenses, Contacts, Reports & Premium
-> **Status**: 📋 Planned (ready for execution)
+> **Status**: ✅ Complete
 
 ## Current Position
-- **Phase**: 5 (planned)
-- **Task**: Planning complete — 4 plans across 3 waves
-- **Status**: Ready for execution
+- **Phase**: 5 (complete)
+- **Task**: All 4 plans executed across 3 waves
+- **Next**: Phase 6 (if planned) or production readiness
 
-## Last Session Summary
-Phase 4 complete (4 plans, 4 commits). Full schedule system implemented.
-Phase 5 planned with 4 plans:
-- 5.1: Expense tracking model, service, CRUD screens (Wave 1)
-- 5.2: Pet service contacts model, service, screens (Wave 1)
-- 5.3: PDF health report generation via Cloud Function (Wave 2)
-- 5.4: Premium subscription gating + final polish (Wave 3)
+## Phase History
+| Phase | Status | Key Commits |
+|-------|--------|-------------|
+| 1: Auth & Scaffold | ✅ Complete | Design system, auth, navigation |
+| 2: Pets & Family | ✅ Complete | Pet CRUD, R2 uploads, family system |
+| 3: Journal & Health | ✅ Complete | Journal timeline, health hub, weight/meds/vax/records |
+| 4: Schedules & Notifications | ✅ Complete | Events, routines, FCM, calendar, prefs |
+| 5: Expenses, Contacts, Reports & Premium | ✅ Complete | Expenses, contacts, PDF reports, premium subscription |
 
-### Known Issue (from Phase 1)
-Firestore security rules not yet deployed → `PERMISSION_DENIED` when reading user doc. Run:
-```bash
-cd firebase && firebase deploy --only firestore:rules --project=pet-companion-app
-```
+## Phase 5 Commits
+| Commit | Plan | Description |
+|--------|------|-------------|
+| `a7065c9` | 5.1 | Expense model, service, 3 screens |
+| `4ad33ec` | 5.2 | Contact model, service, 2 screens |
+| `57cf200` | 5.3 | Cloud Function PDF generator, report screen |
+| `eecebbe` | 5.4 | Subscription model, paywall, PremiumGate widget |
 
-## Plans Status
-| Plan | Wave | Name | Status |
-|------|------|------|--------|
-| 1.1 | 1 | Project Scaffold + Firebase Setup | ✅ Complete |
-| 1.2 | 2 | Design System + Component Library | ✅ Complete |
-| 1.3 | 3 | Auth + Navigation + Screens | ✅ Complete |
-| 2.1 | 1 | Pet Model, Service & CRUD Screens | ✅ Complete |
-| 2.2 | 2 | Pet Photo Upload (R2 + Cloud Function) | ✅ Complete |
-| 2.3 | 3 | Family System (CRUD, Invitation, Roles) | ✅ Complete |
-| 3.1 | 1 | Journal Entry Model, Service & Timeline | ✅ Complete |
-| 3.2 | 1 | Weight Tracking & Medication Management | ✅ Complete |
-| 3.3 | 2 | Vaccinations, Medical Records & Health Hub | ✅ Complete |
-| 4.1 | 1 | Event Model, Service & Scheduling Screens | ✅ Complete |
-| 4.2 | 1 | Daily Routine Templates & Task Assignments | ✅ Complete |
-| 4.3 | 2 | FCM Setup & Cloud Function Notification Crons | ✅ Complete |
-| 4.4 | 3 | Calendar View, Notification Prefs & Auto-Dismiss | ✅ Complete |
-| 5.1 | 1 | Expense Tracking — Model, Service & CRUD Screens | 📋 Planned |
-| 5.2 | 1 | Pet Service Contacts — Model, Service & Screens | 📋 Planned |
-| 5.3 | 2 | PDF Health Report Generation | 📋 Planned |
-| 5.4 | 3 | Premium Subscription & Feature Gating + Final Polish | 📋 Planned |
+## Architecture
+- **Framework**: Flutter (Dart) + Python Cloud Functions
+- **State**: Riverpod (providers per feature)
+- **Routing**: GoRouter with ShellRoute
+- **Backend**: Firebase Auth, Firestore, Cloud Functions Gen 2
+- **Storage**: Cloudflare R2 via presigned URLs
+- **Design**: Material 3 with custom AppTheme
 
-## Next Steps
-1. `/execute 5` — Execute all Phase 5 plans
+## Key Patterns
+- Models: Firestore serialization (fromMap/toMap)
+- Services: Single-responsibility, injected via Riverpod
+- Feature folders: models/, services/, providers/, screens/, widgets/
+- Cloud Functions: Python, organized in src/ submodules
