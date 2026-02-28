@@ -1,19 +1,21 @@
 # STATE.md — Project Memory
 
-> **Last Updated**: 2026-02-28 21:34
+> **Last Updated**: 2026-02-28 22:30
 > **Current Phase**: 3 — Pet Journal & Health Tracking
-> **Status**: 📋 Planned (ready for execution)
+> **Status**: ✅ Complete
 
 ## Current Position
-- **Phase**: 3 (planned)
-- **Task**: Planning complete — 3 plans across 2 waves
-- **Status**: Ready for execution
+- **Phase**: 3 (complete)
+- **Task**: All 3 plans executed and verified
+- **Status**: Phase 3 complete — ready for Phase 4
 
 ## Last Session Summary
-Phase 2 complete and verified (9/9 must-haves). Phase 3 planned with 3 plans:
-- 3.1: Journal Entry model, service, timeline + entry creation (Wave 1)
-- 3.2: Weight tracking with chart + medication management (Wave 1)
-- 3.3: Vaccinations, medical records, Health Hub + routing (Wave 2)
+Phase 3 executed across 2 waves, 3 plans, 3 commits:
+- 3.1 (`5b04e23`): Journal Entry model (11 types), service, providers, timeline + add entry screens
+- 3.2 (`99818cd`): Weight tracking (fl_chart), medication management (active/inactive)
+- 3.3 (`f937eb5`): Vaccinations (overdue tracking), medical records (5 types), Health Hub dashboard
+
+All routes restructured under `/pets/:petId/health/*`. `flutter build web` passes with 0 errors.
 
 ### Known Issue (from Phase 1)
 Firestore security rules not yet deployed → `PERMISSION_DENIED` when reading user doc. Run:
@@ -30,9 +32,9 @@ cd firebase && firebase deploy --only firestore:rules --project=pet-companion-ap
 | 2.1 | 1 | Pet Model, Service & CRUD Screens | ✅ Complete |
 | 2.2 | 2 | Pet Photo Upload (R2 + Cloud Function) | ✅ Complete |
 | 2.3 | 3 | Family System (CRUD, Invitation, Roles) | ✅ Complete |
-| 3.1 | 1 | Journal Entry Model, Service & Timeline | 📋 Planned |
-| 3.2 | 1 | Weight Tracking & Medication Management | 📋 Planned |
-| 3.3 | 2 | Vaccinations, Medical Records & Health Hub | 📋 Planned |
+| 3.1 | 1 | Journal Entry Model, Service & Timeline | ✅ Complete |
+| 3.2 | 1 | Weight Tracking & Medication Management | ✅ Complete |
+| 3.3 | 2 | Vaccinations, Medical Records & Health Hub | ✅ Complete |
 
 ## Next Steps
-1. `/execute 3` — Execute all Phase 3 plans
+1. `/plan 4` — Plan Phase 4: Scheduling & Expenses
