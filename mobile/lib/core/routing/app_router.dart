@@ -34,6 +34,8 @@ import '../../features/schedule/screens/notification_preferences_screen.dart';
 import '../../features/expenses/screens/expenses_screen.dart';
 import '../../features/expenses/screens/add_expense_screen.dart';
 import '../../features/expenses/screens/expense_detail_screen.dart';
+import '../../features/contacts/screens/contacts_screen.dart';
+import '../../features/contacts/screens/add_contact_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -403,8 +405,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/contacts',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'Contacts'),
+            builder: (context, state) {
+              final familyId = state.uri.queryParameters['familyId'] ?? '';
+              return ContactsScreen(familyId: familyId);
+            },
+            routes: [
+              GoRoute(
+                path: 'add',
+                builder: (context, state) {
+                  final familyId = state.uri.queryParameters['familyId'] ?? '';
+                  return AddContactScreen(familyId: familyId);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/reports',
