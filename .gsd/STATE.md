@@ -1,21 +1,21 @@
 # STATE.md — Project Memory
 
-> **Last Updated**: 2026-02-28 22:30
-> **Current Phase**: 3 — Pet Journal & Health Tracking
-> **Status**: ✅ Complete
+> **Last Updated**: 2026-02-28 22:08
+> **Current Phase**: 4 — Schedules, Notifications & Routines
+> **Status**: 📋 Planned (ready for execution)
 
 ## Current Position
-- **Phase**: 3 (complete)
-- **Task**: All 3 plans executed and verified
-- **Status**: Phase 3 complete — ready for Phase 4
+- **Phase**: 4 (planned)
+- **Task**: Planning complete — 4 plans across 3 waves
+- **Status**: Ready for execution
 
 ## Last Session Summary
-Phase 3 executed across 2 waves, 3 plans, 3 commits:
-- 3.1 (`5b04e23`): Journal Entry model (11 types), service, providers, timeline + add entry screens
-- 3.2 (`99818cd`): Weight tracking (fl_chart), medication management (active/inactive)
-- 3.3 (`f937eb5`): Vaccinations (overdue tracking), medical records (5 types), Health Hub dashboard
-
-All routes restructured under `/pets/:petId/health/*`. `flutter build web` passes with 0 errors.
+Phase 3 complete (3 plans, 3 commits). Firebase API key removed from git history via BFG.
+Phase 4 planned with 4 plans:
+- 4.1: Event model, service, event list/create/detail screens (Wave 1)
+- 4.2: Routine template model, service, routine screens (Wave 1)
+- 4.3: FCM client setup + Cloud Functions notification crons (Wave 2)
+- 4.4: Calendar view, notification preferences, event completion auto-dismiss (Wave 3)
 
 ### Known Issue (from Phase 1)
 Firestore security rules not yet deployed → `PERMISSION_DENIED` when reading user doc. Run:
@@ -35,6 +35,10 @@ cd firebase && firebase deploy --only firestore:rules --project=pet-companion-ap
 | 3.1 | 1 | Journal Entry Model, Service & Timeline | ✅ Complete |
 | 3.2 | 1 | Weight Tracking & Medication Management | ✅ Complete |
 | 3.3 | 2 | Vaccinations, Medical Records & Health Hub | ✅ Complete |
+| 4.1 | 1 | Event Model, Service & Scheduling Screens | 📋 Planned |
+| 4.2 | 1 | Daily Routine Templates & Task Assignments | 📋 Planned |
+| 4.3 | 2 | FCM Setup & Cloud Function Notification Crons | 📋 Planned |
+| 4.4 | 3 | Calendar View, Notification Prefs & Auto-Dismiss | 📋 Planned |
 
 ## Next Steps
-1. `/plan 4` — Plan Phase 4: Scheduling & Expenses
+1. `/execute 4` — Execute all Phase 4 plans
