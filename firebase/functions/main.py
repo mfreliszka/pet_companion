@@ -8,6 +8,12 @@ from firebase_functions import identity_fn, https_fn, options
 from firebase_admin import initialize_app, firestore
 from datetime import datetime, timezone
 
+# Re-export scheduled functions so Firebase discovers them
+from src.notifications.send_reminders import (  # noqa: F401
+    send_event_reminders,
+    send_vaccination_reminders,
+)
+
 # Initialize Firebase Admin SDK
 app = initialize_app()
 

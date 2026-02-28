@@ -47,6 +47,7 @@ dependencies:
   http: any
   intl: any
   uuid: any
+  firebase_messaging: ^16.1.1
 
 dev_dependencies:
   flutter_test:
