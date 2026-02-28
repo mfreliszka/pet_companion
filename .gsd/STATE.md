@@ -1,20 +1,21 @@
 # STATE.md — Project Memory
 
-> **Last Updated**: 2026-02-28 23:15
-> **Current Phase**: 4 — Schedules, Notifications & Routines
-> **Status**: ✅ Complete
+> **Last Updated**: 2026-02-28 22:32
+> **Current Phase**: 5 — Expenses, Contacts, Reports & Premium
+> **Status**: 📋 Planned (ready for execution)
 
 ## Current Position
-- **Phase**: 4 (complete)
-- **Task**: All 4 plans executed across 3 waves
-- **Status**: Build verified, committed
+- **Phase**: 5 (planned)
+- **Task**: Planning complete — 4 plans across 3 waves
+- **Status**: Ready for execution
 
 ## Last Session Summary
-Phase 4 complete (4 plans, 4 commits). Full schedule system implemented:
-- Events: model, service, add/list/detail screens, router
-- Routines: template model, daily log system, reorderable task builder, detail screen
-- FCM: NotificationService with token management, Cloud Function crons (event + vaccination reminders)
-- Calendar: custom month grid, per-day event + routine progress view, notification preferences
+Phase 4 complete (4 plans, 4 commits). Full schedule system implemented.
+Phase 5 planned with 4 plans:
+- 5.1: Expense tracking model, service, CRUD screens (Wave 1)
+- 5.2: Pet service contacts model, service, screens (Wave 1)
+- 5.3: PDF health report generation via Cloud Function (Wave 2)
+- 5.4: Premium subscription gating + final polish (Wave 3)
 
 ### Known Issue (from Phase 1)
 Firestore security rules not yet deployed → `PERMISSION_DENIED` when reading user doc. Run:
@@ -38,6 +39,10 @@ cd firebase && firebase deploy --only firestore:rules --project=pet-companion-ap
 | 4.2 | 1 | Daily Routine Templates & Task Assignments | ✅ Complete |
 | 4.3 | 2 | FCM Setup & Cloud Function Notification Crons | ✅ Complete |
 | 4.4 | 3 | Calendar View, Notification Prefs & Auto-Dismiss | ✅ Complete |
+| 5.1 | 1 | Expense Tracking — Model, Service & CRUD Screens | 📋 Planned |
+| 5.2 | 1 | Pet Service Contacts — Model, Service & Screens | 📋 Planned |
+| 5.3 | 2 | PDF Health Report Generation | 📋 Planned |
+| 5.4 | 3 | Premium Subscription & Feature Gating + Final Polish | 📋 Planned |
 
 ## Next Steps
-1. Phase 5 planning — TBD (Expenses, Contacts, Premium features, etc.)
+1. `/execute 5` — Execute all Phase 5 plans
