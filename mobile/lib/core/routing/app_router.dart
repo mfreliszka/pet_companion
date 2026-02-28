@@ -15,9 +15,14 @@ import '../../features/family/screens/join_family_screen.dart';
 import '../../features/family/screens/family_detail_screen.dart';
 import '../../features/journal/screens/journal_timeline_screen.dart';
 import '../../features/journal/screens/add_journal_entry_screen.dart';
+import '../../features/health/screens/health_hub_screen.dart';
 import '../../features/health/screens/weight_chart_screen.dart';
 import '../../features/health/screens/medications_screen.dart';
 import '../../features/health/screens/add_medication_screen.dart';
+import '../../features/health/screens/vaccinations_screen.dart';
+import '../../features/health/screens/add_vaccination_screen.dart';
+import '../../features/health/screens/medical_records_screen.dart';
+import '../../features/health/screens/add_medical_record_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -95,6 +100,10 @@ class _AuthenticatedShell extends ConsumerWidget {
 
   String _titleForRoute(String location) {
     if (location.contains('/journal')) return 'Journal';
+    if (location.contains('/health/weight')) return 'Weight';
+    if (location.contains('/health/medications')) return 'Medications';
+    if (location.contains('/health/vaccinations')) return 'Vaccinations';
+    if (location.contains('/health/records')) return 'Medical Records';
     if (location.contains('/health')) return 'Health';
     return switch (location) {
       '/' => 'Home',
@@ -176,25 +185,66 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     ],
                   ),
                   GoRoute(
-                    path: 'weight',
+                    path: 'health',
                     builder: (context, state) {
                       final petId = state.pathParameters['petId']!;
-                      return WeightChartScreen(petId: petId);
-                    },
-                  ),
-                  GoRoute(
-                    path: 'medications',
-                    builder: (context, state) {
-                      final petId = state.pathParameters['petId']!;
-                      return MedicationsScreen(petId: petId);
+                      return HealthHubScreen(petId: petId);
                     },
                     routes: [
                       GoRoute(
-                        path: 'add',
+                        path: 'weight',
                         builder: (context, state) {
                           final petId = state.pathParameters['petId']!;
-                          return AddMedicationScreen(petId: petId);
+                          return WeightChartScreen(petId: petId);
                         },
+                      ),
+                      GoRoute(
+                        path: 'medications',
+                        builder: (context, state) {
+                          final petId = state.pathParameters['petId']!;
+                          return MedicationsScreen(petId: petId);
+                        },
+                        routes: [
+                          GoRoute(
+                            path: 'add',
+                            builder: (context, state) {
+                              final petId = state.pathParameters['petId']!;
+                              return AddMedicationScreen(petId: petId);
+                            },
+                          ),
+                        ],
+                      ),
+                      GoRoute(
+                        path: 'vaccinations',
+                        builder: (context, state) {
+                          final petId = state.pathParameters['petId']!;
+                          return VaccinationsScreen(petId: petId);
+                        },
+                        routes: [
+                          GoRoute(
+                            path: 'add',
+                            builder: (context, state) {
+                              final petId = state.pathParameters['petId']!;
+                              return AddVaccinationScreen(petId: petId);
+                            },
+                          ),
+                        ],
+                      ),
+                      GoRoute(
+                        path: 'records',
+                        builder: (context, state) {
+                          final petId = state.pathParameters['petId']!;
+                          return MedicalRecordsScreen(petId: petId);
+                        },
+                        routes: [
+                          GoRoute(
+                            path: 'add',
+                            builder: (context, state) {
+                              final petId = state.pathParameters['petId']!;
+                              return AddMedicalRecordScreen(petId: petId);
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -231,8 +281,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/health',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'Health'),
+            builder: (context, state) => const PlaceholderScreen(
+              title: 'Health\nSelect a pet to view their health data',
+            ),
           ),
           GoRoute(
             path: '/schedule',
