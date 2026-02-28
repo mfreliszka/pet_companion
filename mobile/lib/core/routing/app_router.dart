@@ -29,6 +29,8 @@ import '../../features/schedule/screens/event_detail_screen.dart';
 import '../../features/schedule/screens/routines_screen.dart';
 import '../../features/schedule/screens/add_routine_screen.dart';
 import '../../features/schedule/screens/routine_detail_screen.dart';
+import '../../features/schedule/screens/care_calendar_screen.dart';
+import '../../features/schedule/screens/notification_preferences_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -354,6 +356,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                 ],
+              ),
+              GoRoute(
+                path: 'calendar',
+                builder: (context, state) {
+                  final familyId = state.uri.queryParameters['familyId'] ?? '';
+                  return CareCalendarScreen(familyId: familyId);
+                },
+              ),
+              GoRoute(
+                path: 'notifications',
+                builder: (context, state) =>
+                    const NotificationPreferencesScreen(),
               ),
             ],
           ),
