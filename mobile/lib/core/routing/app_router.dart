@@ -15,6 +15,9 @@ import '../../features/family/screens/join_family_screen.dart';
 import '../../features/family/screens/family_detail_screen.dart';
 import '../../features/journal/screens/journal_timeline_screen.dart';
 import '../../features/journal/screens/add_journal_entry_screen.dart';
+import '../../features/health/screens/weight_chart_screen.dart';
+import '../../features/health/screens/medications_screen.dart';
+import '../../features/health/screens/add_medication_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -168,6 +171,29 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) {
                           final petId = state.pathParameters['petId']!;
                           return AddJournalEntryScreen(petId: petId);
+                        },
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'weight',
+                    builder: (context, state) {
+                      final petId = state.pathParameters['petId']!;
+                      return WeightChartScreen(petId: petId);
+                    },
+                  ),
+                  GoRoute(
+                    path: 'medications',
+                    builder: (context, state) {
+                      final petId = state.pathParameters['petId']!;
+                      return MedicationsScreen(petId: petId);
+                    },
+                    routes: [
+                      GoRoute(
+                        path: 'add',
+                        builder: (context, state) {
+                          final petId = state.pathParameters['petId']!;
+                          return AddMedicationScreen(petId: petId);
                         },
                       ),
                     ],
