@@ -26,6 +26,9 @@ import '../../features/health/screens/add_medical_record_screen.dart';
 import '../../features/schedule/screens/events_screen.dart';
 import '../../features/schedule/screens/add_event_screen.dart';
 import '../../features/schedule/screens/event_detail_screen.dart';
+import '../../features/schedule/screens/routines_screen.dart';
+import '../../features/schedule/screens/add_routine_screen.dart';
+import '../../features/schedule/screens/routine_detail_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -324,8 +327,35 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/schedule',
             builder: (context, state) => const PlaceholderScreen(
-              title: 'Schedule\nSelect a pet to view their events',
+              title:
+                  'Schedule\nSelect a pet to view events, or view routines below',
             ),
+            routes: [
+              GoRoute(
+                path: 'routines',
+                builder: (context, state) {
+                  final familyId = state.uri.queryParameters['familyId'] ?? '';
+                  return RoutinesScreen(familyId: familyId);
+                },
+                routes: [
+                  GoRoute(
+                    path: 'add',
+                    builder: (context, state) {
+                      final familyId =
+                          state.uri.queryParameters['familyId'] ?? '';
+                      return AddRoutineScreen(familyId: familyId);
+                    },
+                  ),
+                  GoRoute(
+                    path: ':routineId',
+                    builder: (context, state) {
+                      final routineId = state.pathParameters['routineId']!;
+                      return RoutineDetailScreen(routineId: routineId);
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
           GoRoute(
             path: '/expenses',
