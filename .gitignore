@@ -121,3 +121,8 @@ app.*.symbols
 
 .env
 venv
+
+# Firebase config (contains API keys)
+**/firebase_options.dart
+**/GoogleService-Info.plist
+**/google-services.json
