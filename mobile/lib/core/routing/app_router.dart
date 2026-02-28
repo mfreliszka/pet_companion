@@ -13,6 +13,8 @@ import '../../features/family/screens/family_list_screen.dart';
 import '../../features/family/screens/create_family_screen.dart';
 import '../../features/family/screens/join_family_screen.dart';
 import '../../features/family/screens/family_detail_screen.dart';
+import '../../features/journal/screens/journal_timeline_screen.dart';
+import '../../features/journal/screens/add_journal_entry_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -89,13 +91,13 @@ class _AuthenticatedShell extends ConsumerWidget {
   }
 
   String _titleForRoute(String location) {
+    if (location.contains('/journal')) return 'Journal';
+    if (location.contains('/health')) return 'Health';
     return switch (location) {
       '/' => 'Home',
       '/profile' => 'Profile',
       '/pets' => 'My Pets',
       '/family' => 'Family',
-      '/journal' => 'Journal',
-      '/health' => 'Health',
       '/schedule' => 'Schedule',
       '/expenses' => 'Expenses',
       '/contacts' => 'Contacts',
@@ -153,6 +155,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   final petId = state.pathParameters['petId']!;
                   return PetDetailScreen(petId: petId);
                 },
+                routes: [
+                  GoRoute(
+                    path: 'journal',
+                    builder: (context, state) {
+                      final petId = state.pathParameters['petId']!;
+                      return JournalTimelineScreen(petId: petId);
+                    },
+                    routes: [
+                      GoRoute(
+                        path: 'add',
+                        builder: (context, state) {
+                          final petId = state.pathParameters['petId']!;
+                          return AddJournalEntryScreen(petId: petId);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -179,8 +199,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/journal',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'Journal'),
+            builder: (context, state) => const PlaceholderScreen(
+              title: 'Journal\nSelect a pet to view their journal',
+            ),
           ),
           GoRoute(
             path: '/health',
