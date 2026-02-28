@@ -28,25 +28,32 @@ class ImageUtils {
     if (pickedFile == null) return null;
 
     // 2. Crop to square (face-centered)
-    final cropped = await ImageCropper().cropImage(
-      sourcePath: pickedFile.path,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-      compressQuality: 100, // We'll compress separately
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Photo',
-          toolbarColor: Colors.teal,
-          toolbarWidgetColor: Colors.white,
-          lockAspectRatio: true,
-        ),
-        IOSUiSettings(title: 'Crop Photo', aspectRatioLockEnabled: true),
-      ],
-    );
-    if (cropped == null) return null;
+    CroppedFile? cropped;
+    try {
+      cropped = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        compressQuality: 100, // We'll compress separately
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Photo',
+            toolbarColor: Colors.teal,
+            toolbarWidgetColor: Colors.white,
+            lockAspectRatio: true,
+          ),
+          IOSUiSettings(title: 'Crop Photo', aspectRatioLockEnabled: true),
+        ],
+      );
+    } catch (e) {
+      // Android image_cropper can crash with "Reply already submitted" —
+      // fall back to the uncropped picked file.
+      debugPrint('ImageCropper error (using uncropped): $e');
+    }
+    final imagePath = cropped?.path ?? pickedFile.path;
 
     // 3. Compress
     final compressedBytes = await FlutterImageCompress.compressWithFile(
-      cropped.path,
+      imagePath,
       minWidth: maxDimension,
       minHeight: maxDimension,
       quality: quality,
