@@ -31,6 +31,9 @@ import '../../features/schedule/screens/add_routine_screen.dart';
 import '../../features/schedule/screens/routine_detail_screen.dart';
 import '../../features/schedule/screens/care_calendar_screen.dart';
 import '../../features/schedule/screens/notification_preferences_screen.dart';
+import '../../features/expenses/screens/expenses_screen.dart';
+import '../../features/expenses/screens/add_expense_screen.dart';
+import '../../features/expenses/screens/expense_detail_screen.dart';
 import '../widgets/layout/app_scaffold.dart';
 import '../widgets/layout/app_drawer.dart';
 
@@ -373,8 +376,30 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/expenses',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'Expenses'),
+            builder: (context, state) {
+              final familyId = state.uri.queryParameters['familyId'] ?? '';
+              return ExpensesScreen(familyId: familyId);
+            },
+            routes: [
+              GoRoute(
+                path: 'add',
+                builder: (context, state) {
+                  final familyId = state.uri.queryParameters['familyId'] ?? '';
+                  return AddExpenseScreen(familyId: familyId);
+                },
+              ),
+              GoRoute(
+                path: ':expenseId',
+                builder: (context, state) {
+                  final expenseId = state.pathParameters['expenseId']!;
+                  final familyId = state.uri.queryParameters['familyId'] ?? '';
+                  return ExpenseDetailScreen(
+                    expenseId: expenseId,
+                    familyId: familyId,
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/contacts',
