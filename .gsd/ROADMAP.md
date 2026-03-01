@@ -89,3 +89,33 @@
 - Premium subscription management
 - Feature gating (client-side + server-side)
 - Final polish, performance optimization, caching
+
+---
+
+### Phase 6: Family Feature Fixes
+**Status**: ✅ Complete
+**Objective**: Fix pet creation without family, join-by-code without password, invitation delivery
+**Depends on**: Phase 2
+
+**Tasks**:
+- [x] Auto-create personal family when adding pet without one
+- [x] Fix join-family-by-code without password
+- [x] In-app invitation delivery system
+
+---
+
+### Phase 7: API Key Security
+**Status**: ⬜ Not Started
+**Objective**: Remove exposed Firebase API keys from git tracking, restrict keys, audit for secrets
+**Depends on**: Phase 1
+
+**Tasks**:
+- [ ] Remove tracked Firebase config files from git index
+- [ ] Restrict API keys in Google Cloud Console
+- [ ] Verify no other hardcoded secrets in codebase
+- [ ] (Optional) Scrub git history with filter-repo
+
+**Verification**:
+- `git ls-files --cached` shows no Firebase config files
+- API keys restricted in GCP Console
+- App builds successfully with untracked config files
