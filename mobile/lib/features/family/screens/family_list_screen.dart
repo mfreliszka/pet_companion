@@ -15,6 +15,7 @@ class FamilyListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final familiesAsync = ref.watch(userFamiliesProvider);
+    final pendingAsync = ref.watch(pendingInvitationsProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -31,17 +32,22 @@ class FamilyListScreen extends ConsumerWidget {
           ),
         ),
         data: (families) {
-          if (families.isEmpty) {
+          if (families.isEmpty && !(pendingAsync.value?.isNotEmpty ?? false)) {
             return _EmptyState(theme: theme);
           }
 
-          return ListView.builder(
+          return ListView(
             padding: AppSpacing.screenPadding,
-            itemCount: families.length,
-            itemBuilder: (context, index) {
-              final family = families[index];
-              return _FamilyCard(family: family);
-            },
+            children: [
+              // ── Pending invitations banner ──
+              if (pendingAsync.value != null &&
+                  pendingAsync.value!.isNotEmpty) ...[
+                _PendingInvitationsBanner(count: pendingAsync.value!.length),
+                AppSpacing.verticalGapLg,
+              ],
+              // ── Family cards ──
+              ...families.map((family) => _FamilyCard(family: family)),
+            ],
           );
         },
       ),
@@ -61,6 +67,49 @@ class FamilyListScreen extends ConsumerWidget {
             label: const Text('Create Family'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Banner showing pending invitation count.
+class _PendingInvitationsBanner extends StatelessWidget {
+  const _PendingInvitationsBanner({required this.count});
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      color: theme.colorScheme.tertiaryContainer,
+      child: InkWell(
+        onTap: () => context.push('/family/invitations'),
+        borderRadius: AppSpacing.borderRadiusMd,
+        child: Padding(
+          padding: AppSpacing.paddingAllLg,
+          child: Row(
+            children: [
+              Icon(
+                Icons.mail_rounded,
+                color: theme.colorScheme.onTertiaryContainer,
+              ),
+              AppSpacing.horizontalGapMd,
+              Expanded(
+                child: Text(
+                  '$count pending invitation${count != 1 ? 's' : ''}',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.onTertiaryContainer,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.onTertiaryContainer,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

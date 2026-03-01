@@ -11,6 +11,7 @@ import '../../../core/utils/image_utils.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../auth/providers/auth_providers.dart';
+import '../../family/providers/family_providers.dart';
 import '../models/pet_model.dart';
 import '../providers/pet_providers.dart';
 
@@ -54,13 +55,29 @@ class _AddPetScreenState extends ConsumerState<AddPetScreen> {
     final user = ref.read(currentUserProvider);
     if (userDoc == null || user == null) return;
 
-    final familyIds = List<String>.from(userDoc['familyIds'] ?? []);
+    var familyIds = List<String>.from(userDoc['familyIds'] ?? []);
+
+    // Auto-create a personal family if the user has none.
     if (familyIds.isEmpty) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please create or join a family first.')),
-      );
-      return;
+      setState(() => _isSaving = true);
+      try {
+        final familyService = ref.read(familyServiceProvider);
+        final displayName = user.displayName ?? 'My';
+        final newFamilyId = await familyService.createFamily(
+          name: "$displayName's Family",
+          userId: user.uid,
+        );
+        familyIds = [newFamilyId];
+        // Invalidate user doc so downstream providers refresh.
+        ref.invalidate(userDocProvider);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to set up family: $e')));
+        setState(() => _isSaving = false);
+        return;
+      }
     }
 
     setState(() => _isSaving = true);

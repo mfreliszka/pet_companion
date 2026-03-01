@@ -80,11 +80,11 @@ class FamilyService {
         );
   }
 
-  /// Stream invitations for a family.
+  /// Stream invitations for a family (from top-level collection).
   Stream<List<Invitation>> streamInvitations(String familyId) {
-    return _familiesRef
-        .doc(familyId)
+    return _firestore
         .collection('invitations')
+        .where('familyId', isEqualTo: familyId)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -104,33 +104,61 @@ class FamilyService {
 
   // ── Invitation ────────────────────────────────────────────────
 
-  /// Send an email invitation to join a family.
+  /// Send an invitation to join a family (top-level /invitations collection).
   Future<void> sendInvitation({
     required String familyId,
+    required String familyName,
     required String email,
     required String invitedBy,
   }) async {
     final expiresAt = DateTime.now().add(const Duration(days: 7));
     final invitation = Invitation(
-      invitedEmail: email,
+      familyId: familyId,
+      familyName: familyName,
+      invitedEmail: email.toLowerCase().trim(),
       invitedBy: invitedBy,
       status: InvitationStatus.pending,
       expiresAt: expiresAt,
     );
 
-    await _familiesRef
-        .doc(familyId)
-        .collection('invitations')
-        .add(invitation.toMap());
+    await _firestore.collection('invitations').add(invitation.toMap());
   }
 
-  /// Join a family by code + password (via Cloud Function).
-  Future<void> joinByCode({
-    required String code,
-    required String password,
-  }) async {
+  /// Stream pending invitations for a user by email.
+  Stream<List<Invitation>> streamPendingInvitations(String email) {
+    return _firestore
+        .collection('invitations')
+        .where('invitedEmail', isEqualTo: email.toLowerCase().trim())
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map(
+          (query) => query.docs
+              .map((doc) => Invitation.fromMap(doc.data(), id: doc.id))
+              .toList(),
+        );
+  }
+
+  /// Accept an invitation (via Cloud Function).
+  Future<void> acceptInvitation(String invitationId) async {
+    final callable = _functions.httpsCallable('accept_invitation');
+    await callable.call({'invitationId': invitationId});
+  }
+
+  /// Decline an invitation.
+  Future<void> declineInvitation(String invitationId) async {
+    await _firestore.collection('invitations').doc(invitationId).update({
+      'status': 'declined',
+    });
+  }
+
+  /// Join a family by code (+ optional password via Cloud Function).
+  Future<void> joinByCode({required String code, String? password}) async {
     final callable = _functions.httpsCallable('join_family_by_code');
-    await callable.call({'code': code, 'password': password});
+    final params = <String, dynamic>{'code': code};
+    if (password != null && password.isNotEmpty) {
+      params['password'] = password;
+    }
+    await callable.call(params);
   }
 
   // ── Member management ─────────────────────────────────────────

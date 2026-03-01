@@ -7,7 +7,7 @@ import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../providers/family_providers.dart';
 
-/// Screen for joining an existing family by code + password.
+/// Screen for joining an existing family by code (+ optional password).
 class JoinFamilyScreen extends ConsumerStatefulWidget {
   const JoinFamilyScreen({super.key});
 
@@ -29,15 +29,15 @@ class _JoinFamilyScreenState extends ConsumerState<JoinFamilyScreen> {
 
   Future<void> _join() async {
     final code = _codeController.text.trim();
-    final password = _passwordController.text.trim();
-    if (code.isEmpty || password.isEmpty) return;
+    if (code.isEmpty) return;
 
     setState(() => _isJoining = true);
 
     try {
+      final password = _passwordController.text.trim();
       await ref
           .read(familyServiceProvider)
-          .joinByCode(code: code, password: password);
+          .joinByCode(code: code, password: password.isEmpty ? null : password);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -78,7 +78,7 @@ class _JoinFamilyScreenState extends ConsumerState<JoinFamilyScreen> {
           ),
           AppSpacing.verticalGapLg,
           Text(
-            'Enter the family code and password\nshared with you by a family member.',
+            'Enter the family code shared with you\nby a family member.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -95,8 +95,8 @@ class _JoinFamilyScreenState extends ConsumerState<JoinFamilyScreen> {
           AppSpacing.verticalGapLg,
           AppTextField(
             controller: _passwordController,
-            label: 'Password',
-            hint: 'Enter the family password',
+            label: 'Password (if required)',
+            hint: 'Leave empty if no password set',
             prefixIcon: Icons.lock_outline,
             obscureText: true,
             textInputAction: TextInputAction.done,

@@ -358,10 +358,12 @@ class _InviteSectionState extends ConsumerState<_InviteSection> {
     if (user == null) return;
 
     try {
+      final family = ref.read(familyDetailProvider(widget.familyId)).value;
       await ref
           .read(familyServiceProvider)
           .sendInvitation(
             familyId: widget.familyId,
+            familyName: family?.name ?? '',
             email: email,
             invitedBy: user.uid,
           );

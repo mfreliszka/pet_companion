@@ -13,6 +13,7 @@ import '../../features/family/screens/family_list_screen.dart';
 import '../../features/family/screens/create_family_screen.dart';
 import '../../features/family/screens/join_family_screen.dart';
 import '../../features/family/screens/family_detail_screen.dart';
+import '../../features/family/screens/pending_invitations_screen.dart';
 import '../../features/journal/screens/journal_timeline_screen.dart';
 import '../../features/journal/screens/add_journal_entry_screen.dart';
 import '../../features/health/screens/health_hub_screen.dart';
@@ -311,6 +312,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'join',
                 builder: (context, state) => const JoinFamilyScreen(),
+              ),
+              GoRoute(
+                path: 'invitations',
+                builder: (context, state) => const PendingInvitationsScreen(),
               ),
               GoRoute(
                 path: ':familyId',

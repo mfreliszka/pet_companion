@@ -46,3 +46,11 @@ final isAdminProvider = Provider.family<bool, String>((ref, familyId) {
   if (family == null || user == null) return false;
   return family.isAdmin(user.uid);
 });
+
+/// Streams pending invitations for the current user's email.
+final pendingInvitationsProvider = StreamProvider<List<Invitation>>((ref) {
+  final user = ref.watch(currentUserProvider);
+  if (user == null || user.email == null) return Stream.value([]);
+
+  return ref.watch(familyServiceProvider).streamPendingInvitations(user.email!);
+});
