@@ -277,7 +277,7 @@ class _StatChip extends StatelessWidget {
 
 // ── Member Tile ─────────────────────────────────────────────────
 
-class _MemberTile extends StatelessWidget {
+class _MemberTile extends ConsumerWidget {
   const _MemberTile({
     required this.memberId,
     required this.isAdmin,
@@ -291,19 +291,46 @@ class _MemberTile extends StatelessWidget {
   final VoidCallback onRemove;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final profileAsync = ref.watch(memberProfileProvider(memberId));
+
+    final displayName = profileAsync.whenOrNull(
+      data: (data) => data?['displayName'] as String?,
+    );
+    final email = profileAsync.whenOrNull(
+      data: (data) => data?['email'] as String?,
+    );
+    final photoUrl = profileAsync.whenOrNull(
+      data: (data) => data?['photoUrl'] as String?,
+    );
+
+    final name = (displayName != null && displayName.isNotEmpty)
+        ? displayName
+        : (email ?? memberId);
+    final initials = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
     return ListTile(
       leading: CircleAvatar(
-        child: Text(memberId.substring(0, 2).toUpperCase()),
+        backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+        child: photoUrl == null ? Text(initials) : null,
       ),
       title: Text(
-        memberId,
+        name,
         style: theme.textTheme.bodyMedium,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
+      subtitle: (displayName != null && displayName.isNotEmpty && email != null)
+          ? Text(
+              email,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            )
+          : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -21,16 +21,31 @@ class FamilyListScreen extends ConsumerWidget {
     return Scaffold(
       body: familiesAsync.when(
         loading: () => const ShimmerLoading(),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: AppColors.error),
-              AppSpacing.verticalGapMd,
-              Text('Failed to load families', style: theme.textTheme.bodyLarge),
-            ],
-          ),
-        ),
+        error: (e, stack) {
+          debugPrint('=== FAMILY LOAD ERROR ===\n$e\n$stack');
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                AppSpacing.verticalGapMd,
+                Text(
+                  'Failed to load families',
+                  style: theme.textTheme.bodyLarge,
+                ),
+                AppSpacing.verticalGapSm,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    '$e',
+                    style: theme.textTheme.bodySmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
         data: (families) {
           if (families.isEmpty && !(pendingAsync.value?.isNotEmpty ?? false)) {
             return _EmptyState(theme: theme);

@@ -66,12 +66,17 @@ class FamilyService {
     });
   }
 
-  /// Stream multiple families by ID list.
-  Stream<List<Family>> streamUserFamilies(List<String> familyIds) {
-    if (familyIds.isEmpty) return Stream.value([]);
-
+  /// Stream families the user belongs to.
+  ///
+  /// Queries where `memberIds` array-contains this [userId].
+  /// This aligns with the Firestore security rule:
+  ///   `allow read: if request.auth.uid in resource.data.memberIds`
+  /// A `whereIn(documentId)` query would be rejected by rules because
+  /// Firestore cannot prove at query-evaluation time that every returned
+  /// document satisfies the memberIds constraint.
+  Stream<List<Family>> streamUserFamilies(String userId) {
     return _familiesRef
-        .where(FieldPath.documentId, whereIn: familyIds)
+        .where('memberIds', arrayContains: userId)
         .snapshots()
         .map(
           (query) => query.docs

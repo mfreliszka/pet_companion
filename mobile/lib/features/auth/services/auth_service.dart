@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -27,21 +28,29 @@ class AuthService {
 
   /// Sign in with Google and ensure a Firestore user document exists.
   ///
-  /// Uses the google_sign_in v7 API:
-  ///   1. `GoogleSignIn.instance.authenticate()` triggers an interactive flow.
-  ///   2. The returned account provides an `idToken` for Firebase credential.
+  /// On **web**: uses `FirebaseAuth.signInWithPopup` directly (the
+  /// `google_sign_in` plugin does not support programmatic `authenticate()`
+  /// on web — it requires `renderButton`, which doesn't fit our UI).
+  ///
+  /// On **mobile**: uses the google_sign_in v7 `authenticate()` flow.
   Future<UserCredential> signInWithGoogle() async {
-    // 1. Trigger Google Sign-In interactive flow.
-    final GoogleSignInAccount account = await _googleSignIn.authenticate();
+    final UserCredential userCredential;
 
-    // 2. Build Firebase credential from the id token.
-    final idToken = account.authentication.idToken;
-    final credential = GoogleAuthProvider.credential(idToken: idToken);
+    if (kIsWeb) {
+      // Web: use Firebase Auth popup flow directly.
+      final provider = GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
+      userCredential = await _auth.signInWithPopup(provider);
+    } else {
+      // Mobile: use google_sign_in plugin.
+      final GoogleSignInAccount account = await _googleSignIn.authenticate();
+      final idToken = account.authentication.idToken;
+      final credential = GoogleAuthProvider.credential(idToken: idToken);
+      userCredential = await _auth.signInWithCredential(credential);
+    }
 
-    // 3. Sign in to Firebase.
-    final userCredential = await _auth.signInWithCredential(credential);
     final user = userCredential.user;
-
     if (user != null) {
       await _ensureUserDocument(user);
     }
@@ -51,7 +60,11 @@ class AuthService {
 
   /// Sign out of both Google and Firebase.
   Future<void> signOut() async {
-    await Future.wait([_googleSignIn.signOut(), _auth.signOut()]);
+    if (kIsWeb) {
+      await _auth.signOut();
+    } else {
+      await Future.wait([_googleSignIn.signOut(), _auth.signOut()]);
+    }
   }
 
   // ── Private helpers ───────────────────────────────────────────

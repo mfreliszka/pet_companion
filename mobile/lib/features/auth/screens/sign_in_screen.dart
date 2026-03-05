@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -37,6 +38,19 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Sign-in failed: ${e.description ?? e.code}')),
+      );
+    } on FirebaseAuthException catch (e) {
+      // Web popup dismissed by user — treat as cancellation, not error.
+      if (e.code == 'popup-closed-by-user' ||
+          e.code == 'cancelled-popup-request') {
+        debugPrint('Sign-in popup dismissed by user');
+        if (mounted) setState(() => _isSigningIn = false);
+        return;
+      }
+      debugPrint('FirebaseAuthException: ${e.code} — ${e.message}');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign-in failed: ${e.message ?? e.code}')),
       );
     } catch (e, stack) {
       debugPrint('Sign-in error: $e\n$stack');

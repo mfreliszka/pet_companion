@@ -242,3 +242,24 @@ def join_family_by_code(req: https_fn.CallableRequest) -> dict:
             message=str(e),
         )
 
+
+@https_fn.on_call(
+    cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"]),
+)
+def accept_invitation(req: https_fn.CallableRequest) -> dict:
+    """Accept a pending family invitation."""
+    if req.auth is None:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.UNAUTHENTICATED,
+            message="Authentication required.",
+        )
+
+    from src.family.invitation_handler import handle_accept_invitation
+
+    try:
+        return handle_accept_invitation(req.data or {}, req.auth.uid)
+    except ValueError as e:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            message=str(e),
+        )

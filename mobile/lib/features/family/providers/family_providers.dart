@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/providers/auth_providers.dart';
@@ -16,13 +17,10 @@ final familyServiceProvider = Provider<FamilyService>((ref) {
 
 /// Streams all families the current user belongs to.
 final userFamiliesProvider = StreamProvider<List<Family>>((ref) {
-  final userDoc = ref.watch(userDocProvider).value;
-  if (userDoc == null) return Stream.value([]);
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return Stream.value([]);
 
-  final familyIds = List<String>.from(userDoc['familyIds'] ?? []);
-  if (familyIds.isEmpty) return Stream.value([]);
-
-  return ref.watch(familyServiceProvider).streamUserFamilies(familyIds);
+  return ref.watch(familyServiceProvider).streamUserFamilies(user.uid);
 });
 
 /// Streams a single family by ID.
@@ -54,3 +52,15 @@ final pendingInvitationsProvider = StreamProvider<List<Invitation>>((ref) {
 
   return ref.watch(familyServiceProvider).streamPendingInvitations(user.email!);
 });
+
+// ── Member Profile Provider ─────────────────────────────────────
+
+/// Fetches a member's basic profile (displayName, email, photoUrl) by UID.
+final memberProfileProvider =
+    StreamProvider.family<Map<String, dynamic>?, String>((ref, uid) {
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .snapshots()
+          .map((snap) => snap.data());
+    });

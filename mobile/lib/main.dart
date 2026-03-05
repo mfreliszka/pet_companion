@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -15,14 +16,28 @@ void main() async {
   // Initialize Firebase.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Register background message handler (must be top-level function).
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  // Register background message handler — NOT supported on web.
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
 
-  // Initialize Google Sign-In (v7 API — must be called once before use).
-  await GoogleSignIn.instance.initialize();
+  // Initialize Google Sign-In (v7 API) — only on mobile.
+  // On web, we use FirebaseAuth.signInWithPopup() directly,
+  // so we skip GIS initialization (it causes spurious FedCM popups).
+  if (!kIsWeb) {
+    try {
+      await GoogleSignIn.instance.initialize();
+    } catch (e) {
+      debugPrint('GoogleSignIn.initialize() failed: $e');
+    }
+  }
 
   // Initialize notification service.
-  await NotificationService.instance.initialize();
+  try {
+    await NotificationService.instance.initialize();
+  } catch (e) {
+    debugPrint('NotificationService.initialize() failed: $e');
+  }
 
   runApp(const ProviderScope(child: PetCompanionApp()));
 }

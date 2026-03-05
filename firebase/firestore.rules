@@ -32,8 +32,10 @@ service cloud.firestore {
     // ── Users Collection ──────────────────────────────────
 
     match /users/{userId} {
-      // Users can only read and write their own profile
-      allow read: if isOwner(userId);
+      // Any authenticated user can read basic user profiles.
+      // User docs only contain displayName, email, photoUrl, familyIds —
+      // no sensitive data. This enables family member lists to show names.
+      allow read: if isAuthenticated();
       allow create: if isOwner(userId);
       allow update: if isOwner(userId);
       allow delete: if false; // Users cannot self-delete (handled by Cloud Function)
@@ -49,8 +51,13 @@ service cloud.firestore {
     match /families/{familyId} {
       // Any authenticated user can create a family
       allow create: if isAuthenticated();
-      // Only members can read family data
-      allow read: if isFamilyMember(familyId);
+      // Only members can read family data.
+      // NOTE: uses resource.data (not isFamilyMember helper) so that
+      // collection queries with array-contains on memberIds are allowed.
+      // The get()-based helper blocks queries because Firestore can't
+      // evaluate get() calls during query constraint validation.
+      allow read: if isAuthenticated()
+                  && request.auth.uid in resource.data.memberIds;
       // Only admins can update family settings
       allow update: if isFamilyAdmin(familyId);
       // Only admins can delete family
@@ -156,6 +163,21 @@ service cloud.firestore {
         allow read: if isFamilyMember(get(/databases/$(database)/documents/routineTemplates/$(templateId)).data.familyId);
         allow write: if isFamilyMember(get(/databases/$(database)/documents/routineTemplates/$(templateId)).data.familyId);
       }
+    }
+    // ── Invitations Collection (top-level) ──────────────────
+
+    match /invitations/{invitationId} {
+      // Invited user can read their own invitations
+      allow read: if isAuthenticated()
+                  && resource.data.invitedEmail == request.auth.token.email;
+      // Any authenticated user can create (send) invitations
+      allow create: if isAuthenticated();
+      // Invited user can update (accept/decline)
+      allow update: if isAuthenticated()
+                    && resource.data.invitedEmail == request.auth.token.email;
+      // Only the sender can delete
+      allow delete: if isAuthenticated()
+                    && resource.data.invitedBy == request.auth.uid;
     }
   }
 }
